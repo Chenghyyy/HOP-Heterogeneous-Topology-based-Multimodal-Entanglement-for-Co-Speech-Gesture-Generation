@@ -21,9 +21,13 @@ The dataset used is mainly from [HA2G](https://github.com/alvinliu0/HA2G?tab=rea
 
 ## Training
 Train the proposed HOP model on TED Gesture Dataset:
-```python run_ted.py```
+```
+python run_ted.py
+```
 Train the proposed HOP model on TED Expressive Gesture Dataset:
-```python run_expressive.py```
+```
+python run_expressive.py
+```
 ![](https://github.com/Chenghyyy/HOP-Heterogeneous-Topology-based-Multimodal-Entanglement-for-Co-Speech-Gesture-Generation/blob/main/Figures/result.png)
 
 ## Citation
