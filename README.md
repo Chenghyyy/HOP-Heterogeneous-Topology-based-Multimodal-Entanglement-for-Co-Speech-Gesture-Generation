@@ -10,7 +10,9 @@ This project is developed and tested on Ubuntu 20.04, Python 3.7.16, PyTorch 1.1
 
 ## Installation
 1.Install required python packages:
-`<pip install -r requirements.txt>`
+```
+pip install -r requirements.txt
+```
 2.Download the trained autoencoder model for FGD,please refer mainly [here](https://github.com/alvinliu0/HA2G?tab=readme-ov-file) for more information related to the model.
 3.Download pretrianed fasttext model from [here](https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M-subword.zip)
 
