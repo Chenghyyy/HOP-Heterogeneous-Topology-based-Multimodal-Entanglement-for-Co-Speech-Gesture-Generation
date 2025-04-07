@@ -24,7 +24,7 @@ Train the proposed HOP model on TED Gesture Dataset:
 ```
 python run_ted.py
 ```
-![](https://github.com/Chenghyyy/HOP-Heterogeneous-Topology-based-Multimodal-Entanglement-for-Co-Speech-Gesture-Generation/blob/main/Figures/TED.gif)
+![](https://github.com/Chenghyyy/HOP-Heterogeneous-Topology-based-Multimodal-Entanglement-for-Co-Speech-Gesture-Generation/blob/main/Figures/TED.gif) <br>
 Train the proposed HOP model on TED Expressive Gesture Dataset:
 ```
 python run_expressive.py
