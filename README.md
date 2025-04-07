@@ -1,5 +1,5 @@
 # HOP-Heterogeneous-Topology-based-Multimodal-Entanglement-for-Co-Speech-Gesture-Generation
-
+Hongye Cheng,  [Tianyu Wang](https://star-uu-wang.github.io/),  [Guangsi Shi](https://au.linkedin.com/in/guangsi-shi-040432126/en),  Zexing Zhao,  Yanwei Fu
 
 ## Citation
 If you are interested in our work or use the code in your research, please cite the following article:
