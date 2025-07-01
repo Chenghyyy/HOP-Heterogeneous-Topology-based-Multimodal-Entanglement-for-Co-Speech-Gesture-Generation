@@ -47,61 +47,6 @@ parser = argparse.ArgumentParser(description='Time-LLM')
 
 vid_idx = random.sample(range(0, 1000), 1)[0]
 
-#为了确保程序中的随机性操作在每次运行时产生相同的结果，即“固定随机种子”。这样做可以使结果可复现，特别是在调试和实验过程中
-# fix_seed = 2021
-# random.seed(fix_seed)
-# torch.manual_seed(fix_seed)
-# np.random.seed(fix_seed)
-
-'''
---task_name
-long_term_forecast
---is_training
-1
---root_path
-./dataset/rhythm_dataset
---data_path
-rhythm.csv
---model_id
-ETTh1_512_96
---model
-TimeLLM
---data
-ETTh1
---features
-M
---label_len
-48
---seq_len
-32
---pred_len
-6
---factor
-3
---enc_in
-7
---dec_in
-7
---c_out
-7
---des
-'Exp'
---itr
-1
---d_model
-128
---d_ff
-128
---learning_rate
-0.005
---llm_layers
-12
---train_epochs
-75
---model_comment
-'TimeLLM-ETTh1'
-'''
-
 # basic config
 parser.add_argument('--is_training', type=int, required=False, default=1, help='status')
 parser.add_argument('--model', type=str, required=False, default='AD_LLM',
@@ -165,7 +110,7 @@ if args.datasets == 'TED':
                  0.2452035, 0.1115339, 0.2051307]
     data_mean_dir_vec = np.array(mean_dir_vec).squeeze()
     val_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
-    eval_net_path = '/home/wxp/chy/text_evaluator/output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
+    eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
 else:
     mean_dir_vec = [-0.0737964, -0.9968923, -0.1082858, 0.9111595, 0.2399522, -0.102547, -0.8936886, 0.3131501,
                     -0.1039348, 0.2093927, 0.958293, 0.0824881, -0.1689021, -0.0353824, -0.7588258, -0.2794763,
@@ -203,9 +148,9 @@ else:
     # mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
     data_mean_dir_vec = np.array(mean_dir_vec).squeeze()
     val_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
-    eval_net_path = '/home/wxp/chy/text_evaluator/output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
+    eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
 
-checkpoint_path = '/home/wxp/chy/Gesture-Generation-from-Trimodal-Context-master/output/train_multimodal_context/multimodal_context_checkpoint_best.bin'
+checkpoint_path = '/home/wxp/chy/HOP/output/train_multimodal_context/multimodal_context_checkpoint_best.bin'
 our_checkpoint_path = '/home/wxp/chy/text_timellm/save_checkpoint/expressive_FGD_1.83.bin'
 
 save_video_path = '/home/wxp/chy/text_timellm/test_video'
@@ -310,7 +255,7 @@ train_dataset = SpeechMotionDataset(args.datasets_path,#'./data/ted_dataset/lmdb
 speaker_model = train_dataset.speaker_model
 
 model = HOP.Model(args, llm_model, tokenizer, speaker_model).float()
-model.to(device)  # 加gru后
+model.to(device)  
 model.load_state_dict(our_checkpoint['generator'])
 model.train(False)
 
