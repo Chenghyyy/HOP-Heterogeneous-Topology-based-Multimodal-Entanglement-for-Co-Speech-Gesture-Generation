@@ -21,6 +21,17 @@ pip install -r requirements.txt
 The dataset used is mainly from [HA2G](https://github.com/alvinliu0/HA2G?tab=readme-ov-file). Please refer mainly [here](https://github.com/alvinliu0/HA2G?tab=readme-ov-file) for more information related to the dataset.Put all dataset into `./data/`
 
 ## Training
+Before training, it should be ensured that the data has the following structure：
+```
+HOP/
+|——data
+|   |——fasttext
+|   |     |——crawl-300d-2M-subword
+|   |     |          |——crawl-300d-2M-subword.bin
+|   |     |          |__crawl-300d-2M-subword.vec
+|   |——ted_dataset
+|   |__ted_expressive_dataset
+```
 Train the proposed HOP model on TED Gesture Dataset:
 ```
 python run_ted.py
