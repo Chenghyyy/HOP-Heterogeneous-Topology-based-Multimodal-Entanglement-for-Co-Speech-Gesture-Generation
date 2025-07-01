@@ -174,13 +174,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/Time-LLM-main/bert_model/")
+    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -196,7 +196,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
