@@ -18,7 +18,7 @@ pip install -r requirements.txt
 3.Download pretrianed fasttext model from [here](https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M-subword.zip) and put `crawl-300d-2M-subword.bin` and `crawl-300d-2M-subword.vec` at `./data/fasttext/.`
 
 ## Dataset
-The dataset used is mainly from [HA2G](https://github.com/alvinliu0/HA2G?tab=readme-ov-file). Please refer mainly [here](https://github.com/alvinliu0/HA2G?tab=readme-ov-file) for more information related to the dataset.
+The dataset used is mainly from [HA2G](https://github.com/alvinliu0/HA2G?tab=readme-ov-file). Please refer mainly [here](https://github.com/alvinliu0/HA2G?tab=readme-ov-file) for more information related to the dataset.Put all dataset into `./data/`
 
 ## Training
 Train the proposed HOP model on TED Gesture Dataset:
