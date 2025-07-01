@@ -220,13 +220,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/Time-LLM-main/bert_model/")
+    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -242,7 +242,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
@@ -263,7 +263,7 @@ tb_path = 'model' + '_' + str(datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 tb_writer = SummaryWriter(log_dir=str(Path('/home/wxp/chy/HOP/view') / 'tensorboard_runs' / tb_path))
 
 for ii in range(args.itr):
-        train_dataset = SpeechMotionDataset('/home/wxp/data/ted_expressive_dataset/train',
+        train_dataset = SpeechMotionDataset('/home/HOP/data/ted_expressive_dataset/train',
                                             n_poses=34,
                                             subdivision_stride=10,
                                             pose_resampling_fps=15,
@@ -280,7 +280,7 @@ for ii in range(args.itr):
                                   collate_fn=default_collate_fn
                                   )
 
-        val_dataset = SpeechMotionDataset('/home/wxp/data/ted_expressive_dataset/val',
+        val_dataset = SpeechMotionDataset('/home/HOP/data/ted_expressive_dataset/val',
                                           n_poses=34,
                                           subdivision_stride=10,
                                           pose_resampling_fps=15,
@@ -305,8 +305,8 @@ for ii in range(args.itr):
                                            mean_pose=mean_pose,
                                            tokenizer=tokenizer)
 
-        vocab_cache_path = '/home/wxp/data/ted_expressive_dataset/vocab_cache.pkl'
-        wordembed_path = '/home/wxp/chy/HOP/data/fasttext/crawl-300d-2M-subword/crawl-300d-2M-subword.bin'
+        vocab_cache_path = '/home/HOP/data/ted_expressive_dataset/vocab_cache.pkl'
+        wordembed_path = '/home/HOP/data/fasttext/crawl-300d-2M-subword/crawl-300d-2M-subword.bin'
         lang_model = build_vocab('words', [train_dataset, val_dataset, test_dataset], vocab_cache_path, wordembed_path, 300)
         train_dataset.set_lang_model(lang_model)
         val_dataset.set_lang_model(lang_model)
