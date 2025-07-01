@@ -20,7 +20,7 @@ def load_checkpoint_and_model(checkpoint_path, _device='cpu'):
     print('loading checkpoint {}'.format(checkpoint_path))
     checkpoint = torch.load(checkpoint_path, map_location=_device)
     args = checkpoint['args']
-    epoch = checkpoint['epoch']
+    # epoch = checkpoint['epoch']
     lang_model = checkpoint['lang_model']
     speaker_model = checkpoint['speaker_model']
     pose_dim = checkpoint['pose_dim']
