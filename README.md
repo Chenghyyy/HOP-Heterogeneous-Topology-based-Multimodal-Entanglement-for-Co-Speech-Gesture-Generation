@@ -13,7 +13,7 @@ This project is developed and tested on Ubuntu 20.04, Python 3.7.16, PyTorch 1.1
 ```
 pip install -r requirements.txt
 ```
-2.Download the trained autoencoder model for FGD from [here](https://kaistackr-my.sharepoint.com/personal/zeroyy_kaist_ac_kr/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fzeroyy%5Fkaist%5Fac%5Fkr%2FDocuments%2FSA2020%5FPUBLIC%2Foutput%2Ezip&parent=%2Fpersonal%2Fzeroyy%5Fkaist%5Fac%5Fkr%2FDocuments%2FSA2020%5FPUBLIC&ga=1) and put `gesture_autoencoder_checkpoint_best.bin` at `./output/train_h36m_gesture_autoencoder/`.Please refer [Gesture Generation from Trimodal Context]([https://github.com/alvinliu0/HA2G?tab=readme-ov-file](https://github.com/ai4r/Gesture-Generation-from-Trimodal-Context) for more information related to the model.<br>
+2.Download the trained autoencoder model for FGD from [here](https://kaistackr-my.sharepoint.com/personal/zeroyy_kaist_ac_kr/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fzeroyy%5Fkaist%5Fac%5Fkr%2FDocuments%2FSA2020%5FPUBLIC%2Foutput%2Ezip&parent=%2Fpersonal%2Fzeroyy%5Fkaist%5Fac%5Fkr%2FDocuments%2FSA2020%5FPUBLIC&ga=1) and put `gesture_autoencoder_checkpoint_best.bin` at `./output/train_h36m_gesture_autoencoder/`.Please refer [Gesture Generation from Trimodal Context](https://github.com/ai4r/Gesture-Generation-from-Trimodal-Context) for more information related to the model.<br>
 3.Download pretrianed fasttext model from [here](https://dl.fbaipublicfiles.com/fasttext/vectors-english/crawl-300d-2M-subword.zip) and put `crawl-300d-2M-subword.bin` and `crawl-300d-2M-subword.vec` at `./data/fasttext/.`
 
 ## Dataset
