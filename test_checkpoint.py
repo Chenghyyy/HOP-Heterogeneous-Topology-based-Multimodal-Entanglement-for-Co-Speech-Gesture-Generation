@@ -150,16 +150,14 @@ else:
     val_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
     eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
 
-checkpoint_path = '/home/wxp/chy/HOP/output/train_multimodal_context/multimodal_context_checkpoint_best.bin'
-our_checkpoint_path = '/home/wxp/chy/text_timellm/save_checkpoint/expressive_FGD_1.83.bin'
-
+our_checkpoint_path = '/home/wxp/chy/text_timellm/save_checkpoint/TED.bin'
 save_video_path = '/home/wxp/chy/text_timellm/test_video'
 
 our_checkpoint = torch.load(our_checkpoint_path, map_location=device)
 
 if args.llm_model == 'LLAMA':
     # self.llama_config = LlamaConfig.from_pretrained('/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/')
-    llama_config = LlamaConfig.from_pretrained("/home/wxp/chy/text_timellm/llama_model/")
+    llama_config = LlamaConfig.from_pretrained("/home/wxp/chy/HOP/llama_model/")
     # self.llama_config = LlamaConfig.from_pretrained("/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/")
     llama_config.num_hidden_layers = args.llm_layers
     llama_config.output_attentions = True
@@ -167,7 +165,7 @@ if args.llm_model == 'LLAMA':
     try:
         llm_model = LlamaModel.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-            "/home/wxp/chy/text_timellm/llama_model/",
+            "/home/wxp/chy/HOP/llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True,
@@ -187,7 +185,7 @@ if args.llm_model == 'LLAMA':
     try:
         tokenizer = LlamaTokenizer.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-            "/home/wxp/chy/text_timellm/llama_model/",
+            "/home/wxp/chy/HOP/llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True
@@ -201,13 +199,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/Time-LLM-main/bert_model/")
+    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -223,7 +221,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/Time-LLM-main/bert_model/",
+            "/home/wxp/chy/HOP/bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
@@ -238,7 +236,7 @@ else:
     raise Exception('LLM model is not defined')
 llm_model = llm_model.to(device)
 
-args_eval, _, lang_model, _, _ = load_checkpoint_and_model(checkpoint_path, device)
+_, _, lang_model, _, _ = load_checkpoint_and_model(our_checkpoint_path, device)
 out_dim = args.pose_dim
 discriminator = ConvDiscriminator(out_dim).to(device)
 
@@ -255,15 +253,15 @@ train_dataset = SpeechMotionDataset(args.datasets_path,#'./data/ted_dataset/lmdb
 speaker_model = train_dataset.speaker_model
 
 model = HOP.Model(args, llm_model, tokenizer, speaker_model).float()
-model.to(device)  
+model.to(device)  # 加gru后
 model.load_state_dict(our_checkpoint['generator'])
 model.train(False)
 
 # save_path = '/home/wxp/chy/text_timellm/test_video'
 if args.datasets == 'TED':
-    test_data_path = '/home/wxp/chy/text_timellm/data/ted_dataset/lmdb_test'
+    test_data_path = '/home/wxp/chy/HOP/data/ted_dataset/lmdb_test'
 else:
-    test_data_path = '/home/wxp/data/ted_expressive_dataset/test'
+    test_data_path = '/home/wxp/HOP/data/ted_expressive_dataset/test'
 
 n_saved = 0
 n_generations = 1
@@ -274,9 +272,7 @@ while n_saved < n_generations:
     with lmdb_env.begin(write=False) as txn:
         keys = [key for key, _ in txn.cursor()]
         # select video
-        # key = random.choice(keys)
-        # print('key',key)
-        key = b'0000001333'
+        key = random.choice(keys)
         buf = txn.get(key)
         video = pyarrow.deserialize(buf)
         vid = video['vid']
@@ -285,9 +281,8 @@ while n_saved < n_generations:
     print('n_clips', n_clips)
     if n_clips == 0:
         continue
-    # clip_idx = random.randrange(n_clips)
+    clip_idx = random.randrange(n_clips)
     # print('clip_idx',clip_idx)
-    clip_idx = 0
     clip_audio = clips[clip_idx]['audio_raw']
     clip_words = clips[clip_idx]['words']
     clip_time = [clips[clip_idx]['start_time'], clips[clip_idx]['end_time']]
@@ -337,18 +332,16 @@ while n_saved < n_generations:
     print('{}, {}, {}, {}, {}'.format(num_subdivision, unit_time, clip_length, stride_time, audio_sample_length))
 
     outputs = None
-    for a in range(0, num_subdivision):  # num_subdivision应该代表的是将数据集划分为几块
-        start_time = a * stride_time  # stride_time应该代表的是每块的时间
+    for a in range(0, num_subdivision):
+        start_time = a * stride_time
         end_time = start_time + unit_time
 
         # prepare audio input
         audio_start = math.floor(start_time / clip_length * len(clip_audio))
         audio_end = audio_start + audio_sample_length
         in_audio = clip_audio[audio_start:audio_end]
-        #########
-        #为了凑维度加的
+
         in_audio_test = np.pad(in_audio, (0, audio_sample_length-len(in_audio)), 'constant')
-        #########
         assert len(in_audio.shape) == 1  # 1-channel, raw signal
 
         melspec = librosa.feature.melspectrogram(y=in_audio_test, sr=16000, n_fft=1024, hop_length=1096, power=2)
@@ -357,10 +350,8 @@ while n_saved < n_generations:
         log_melspec = torch.from_numpy(log_melspec).to("cuda:0").float()
         log_melspec = log_melspec.unsqueeze(0)
 
-        #####用于计算fgd
-        in_audio = np.pad(in_audio, (0, audio_sample_length - len(in_audio)),'constant')  # 在in_audio数据末尾补0，补到长度为audio_sample_length - len(in_audio)，可能是因为音频数据自带时间信息
+        in_audio = np.pad(in_audio, (0, audio_sample_length - len(in_audio)),'constant')
         in_audio = torch.from_numpy(in_audio).unsqueeze(0).to("cuda:0").float()
-        #####
 
         # prepare text input
         word_seq = get_words_in_time_range(word_list=clip_words, start_time=start_time, end_time=end_time)
@@ -372,10 +363,8 @@ while n_saved < n_generations:
         #####
         i = 0
         for w_i, word in enumerate(word_seq):
-            #####用于计算fgd
             idx = max(0, int(np.floor((word[1] - start_time) / frame_duration)))
             extended_word_indices[idx] = lang_model.get_word_index(word[0])
-            #####
             text.append(word[0])
         text = ' '.join(text)
         print(text)
@@ -460,14 +449,12 @@ while n_saved < n_generations:
 
 mean_pose = np.array(mean_pose).squeeze()
 
-# '/home/wxp/data/ted_expressive_dataset/val'
-#'./data/ted_dataset/lmdb_val'
 if args.datasets == 'TED':
     print('TED')
     val_path = './data/ted_dataset/lmdb_val'
 else:
     print('TED_expressive')
-    val_path = '/home/wxp/data/ted_expressive_dataset/val'
+    val_path = './data/ted_expressive_dataset/val'
 val_dataset = SpeechMotionDataset(val_path,
                                   n_poses=34,
                                   subdivision_stride=10,
