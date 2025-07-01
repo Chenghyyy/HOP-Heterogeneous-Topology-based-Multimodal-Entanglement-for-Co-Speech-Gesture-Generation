@@ -505,7 +505,8 @@ for ii in range(args.itr):
                 gen_state_dict = model.state_dict()
                 filename = '/home/wxp/chy/HOP/save_checkpoint/expressive_FGD_{:.2f}.bin'.format(eval_dict['frechet'])
                 # filename = '/home/wxp/chy/HOP/save_checkpoint/the_best.bin'
-                torch.save({'generator': gen_state_dict}, filename)
+                torch.save({'args': args, 'generator': gen_state_dict, 'lang_model': lang_model, 'speaker_model': speaker_model,'pose_dim': pose_dim}, filename)
+                # torch.save({'generator': gen_state_dict}, filename)
                 print('Saved the checkpoint')
                 logging.info('Saved the checkpoint')
             # if eval_dict['frechet'] < best_values['frechet']:
