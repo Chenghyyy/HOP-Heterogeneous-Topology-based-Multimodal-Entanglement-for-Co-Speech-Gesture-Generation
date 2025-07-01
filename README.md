@@ -32,6 +32,12 @@ python run_expressive.py
 ```
 ![](https://github.com/Chenghyyy/HOP-Heterogeneous-Topology-based-Multimodal-Entanglement-for-Co-Speech-Gesture-Generation/blob/main/Figures/TED_Expressive.gif)
 
+## Test
+You can test the saved checkpoint and save the generated video by running the following code：
+```
+python test_checkpoint.py
+```
+
 ## Citation
 If you are interested in our work or use the code in your research, please cite the following article:
 
