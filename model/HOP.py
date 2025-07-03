@@ -66,7 +66,7 @@ class WavEncoder(nn.Module):
     def forward(self, wav_data):
         wav_data = wav_data.unsqueeze(1)  # add channel dim
         out = self.feat_extractor(wav_data)
-        return out.transpose(1, 2)  # to (batch x seq x dim)只是做一个转置处理，但并没有改变数据储存顺序和结构
+        return out.transpose(1, 2)  
 
 
 class Model(nn.Module):
@@ -163,7 +163,7 @@ class Model(nn.Module):
                 self.gru_input_size = self.d_llm + 126 + 1 + 16 + 32
 
         # self.flatten = nn.Flatten(start_dim=-2)
-        self.gru = nn.GRU(self.gru_input_size, hidden_size=self.hidden_size, num_layers=4, batch_first=True,#传入gru前可展平输入，因为这个输入有时间依赖的在第二维，展平后就都在一维了，也好做输出的大小
+        self.gru = nn.GRU(self.gru_input_size, hidden_size=self.hidden_size, num_layers=4, batch_first=True,
                           bidirectional=True, dropout=0).to(torch.float32).to(device)
 
         self.out = nn.Sequential(
@@ -282,16 +282,14 @@ class ReprogrammingLayer(nn.Module):
         out = out.reshape(B, L, -1)
 
         out = self.activation(out)
-        return self.out_projection(out)#表示给重新变成为语言的输出连一个全连接层，做完一个attention后一般需要一个全连接层
-        #全连接层可以根据输入数据的维度大小控制输出的维度的大小
-        #(4,64,768)
+        return self.out_projection(out)
 
     def reprogramming(self, target_embedding, source_embedding, value_embedding):
         B, L, H, E = target_embedding.shape
 
         scale = 1. / sqrt(E)
 
-        scores = torch.einsum("blhe,she->bhls", target_embedding, source_embedding)#cross attention操作
+        scores = torch.einsum("blhe,she->bhls", target_embedding, source_embedding)
 
         A = self.dropout(torch.softmax(scale * scores, dim=-1))
         reprogramming_embedding = torch.einsum("bhls,she->blhe", A, value_embedding)
