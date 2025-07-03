@@ -118,8 +118,7 @@ class WavEncoder(nn.Module):
     def forward(self, wav_data):
         wav_data = wav_data.unsqueeze(1)  # add channel dim
         out = self.feat_extractor(wav_data)
-        #print('out',out.shape)#(1,32,34)
-        return out.transpose(1, 2)  # to (batch x seq x dim)只是做一个转置处理，但并没有改变数据储存顺序和结构
+        return out.transpose(1, 2)  
 
 class TextEncoderTCN(nn.Module):
     """ based on https://github.com/locuslab/TCN/blob/master/TCN/word_cnn/model.py """
@@ -131,16 +130,16 @@ class TextEncoderTCN(nn.Module):
             assert pre_trained_embedding.shape[0] == n_words
             assert pre_trained_embedding.shape[1] == embed_size
             self.embedding = nn.Embedding.from_pretrained(torch.FloatTensor(pre_trained_embedding),
-                                                          freeze=args.freeze_wordembed)#freeze_wordembed=none表示可以更新嵌入
+                                                          freeze=args.freeze_wordembed)
         else:
             self.embedding = nn.Embedding(n_words, embed_size)
 
         # print('hidden_size',args.hidden_size)
         # print('n_layers',args.n_layers)
         num_channels = [args.hidden_size] * args.n_layers#[4]*300
-        self.tcn = TemporalConvNet(embed_size, num_channels, kernel_size, dropout=dropout)#num_channels 列表定义了每一层的输出通道数，等于 hidden_size，共有 n_layers 层。
+        self.tcn = TemporalConvNet(embed_size, num_channels, kernel_size, dropout=dropout)
 
-        self.decoder = nn.Linear(num_channels[-1], 32)#将TCN的输出特征表示映射到32维的向量
+        self.decoder = nn.Linear(num_channels[-1], 32)
         self.drop = nn.Dropout(emb_dropout)
         self.emb_dropout = emb_dropout
         self.init_weights()
