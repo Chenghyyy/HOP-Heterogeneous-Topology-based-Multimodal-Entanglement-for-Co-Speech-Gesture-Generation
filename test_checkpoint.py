@@ -66,8 +66,8 @@ parser.add_argument('--llm_model', type=str, default='BERT', help='LLM model') #
 parser.add_argument('--llm_dim', type=int, default='768', help='LLM model dimension')# LLama7b:4096; GPT2-small:768; BERT-base:768
 
 #gesture
-parser.add_argument('--datasets_path', type=str, default='/home/wxp/data/ted_expressive_dataset/train',
-                    help='options: [./data/ted_dataset/lmdb_train,/home/wxp/data/ted_expressive_dataset/train]')
+parser.add_argument('--datasets_path', type=str, default='./data/ted_expressive_dataset/train',
+                    help='options: [./data/ted_dataset/lmdb_train,./data/ted_expressive_dataset/train]')
 parser.add_argument('--datasets', type=str, default='TED_expressive',help='options: [TED, TED_expressive]')
 parser.add_argument('--n_poses', type=int, default=34)
 parser.add_argument('--pose_dim', type=int, default=126, help='TED-27,TED_expressive-126')
@@ -110,7 +110,7 @@ if args.datasets == 'TED':
                  0.2452035, 0.1115339, 0.2051307]
     data_mean_dir_vec = np.array(mean_dir_vec).squeeze()
     val_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
-    eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
+    eval_net_path = './output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
 else:
     mean_dir_vec = [-0.0737964, -0.9968923, -0.1082858, 0.9111595, 0.2399522, -0.102547, -0.8936886, 0.3131501,
                     -0.1039348, 0.2093927, 0.958293, 0.0824881, -0.1689021, -0.0353824, -0.7588258, -0.2794763,
@@ -148,16 +148,16 @@ else:
     # mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
     data_mean_dir_vec = np.array(mean_dir_vec).squeeze()
     val_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
-    eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
+    eval_net_path = './output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
 
-our_checkpoint_path = '/home/wxp/chy/text_timellm/save_checkpoint/TED.bin'
-save_video_path = '/home/wxp/chy/text_timellm/test_video'
+our_checkpoint_path = './save_checkpoint/TED.bin'
+save_video_path = './test_video'
 
 our_checkpoint = torch.load(our_checkpoint_path, map_location=device)
 
 if args.llm_model == 'LLAMA':
     # self.llama_config = LlamaConfig.from_pretrained('/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/')
-    llama_config = LlamaConfig.from_pretrained("/home/wxp/chy/HOP/llama_model/")
+    llama_config = LlamaConfig.from_pretrained("./llama_model/")
     # self.llama_config = LlamaConfig.from_pretrained("/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/")
     llama_config.num_hidden_layers = args.llm_layers
     llama_config.output_attentions = True
@@ -165,7 +165,7 @@ if args.llm_model == 'LLAMA':
     try:
         llm_model = LlamaModel.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True,
@@ -185,7 +185,7 @@ if args.llm_model == 'LLAMA':
     try:
         tokenizer = LlamaTokenizer.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True
@@ -199,13 +199,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
+    bert_config = BertConfig.from_pretrained("./bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -221,7 +221,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
@@ -259,9 +259,9 @@ model.train(False)
 
 # save_path = '/home/wxp/chy/text_timellm/test_video'
 if args.datasets == 'TED':
-    test_data_path = '/home/wxp/chy/HOP/data/ted_dataset/lmdb_test'
+    test_data_path = './data/ted_dataset/lmdb_test'
 else:
-    test_data_path = '/home/wxp/HOP/data/ted_expressive_dataset/test'
+    test_data_path = './data/ted_expressive_dataset/test'
 
 n_saved = 0
 n_generations = 1
