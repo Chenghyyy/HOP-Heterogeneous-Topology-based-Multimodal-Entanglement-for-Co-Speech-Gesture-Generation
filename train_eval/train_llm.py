@@ -18,7 +18,7 @@ def train_llm(args, epoch, in_audio, log_melspec, text_token_padded, target_dir_
         # target_dir_vec = target_dir_vec.to(torch.float32)
         # print('target_dir_vec.shape',target_dir_vec.shape)
 
-        # #####训练判别器
+        # #####
         if use_noisy_target:
             noise_target = add_noise(target_dir_vec)
             noise_out = add_noise(outputs.detach())
@@ -36,7 +36,7 @@ def train_llm(args, epoch, in_audio, log_melspec, text_token_padded, target_dir_
         dis_optimizer.step()
     # #####
 
-    #####训练生成器
+    #####
     model_optim.zero_grad()
 
     outputs, z_context, z_mu, z_logvar = model(in_audio, log_melspec, text_token_padded, pre_seq, vid_indices)
@@ -72,7 +72,6 @@ def train_llm(args, epoch, in_audio, log_melspec, text_token_padded, target_dir_
             # speaker embedding KLD
             kld = -0.5 * torch.mean(1 + z_logvar - z_mu.pow(2) - z_logvar.exp())
             loss = huber_loss * args.loss_regression_weight + div_reg * args.loss_reg_weight + kld * args.loss_kld_weight
-            # 600,0.4,0.6
         else:
             loss = huber_loss * args.loss_regression_weight + div_reg * args.loss_reg_weight
     else:
@@ -82,7 +81,7 @@ def train_llm(args, epoch, in_audio, log_melspec, text_token_padded, target_dir_
         loss += gen_error * args.loss_gan_weight
     # train_loss.append(loss.item())
 
-    accelerator.backward(loss)  # 反向传播
+    accelerator.backward(loss)  
     model_optim.step()
 
     ret_dict = {'loss': args.loss_regression_weight * huber_loss.item()}
