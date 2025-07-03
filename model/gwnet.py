@@ -148,11 +148,8 @@ class gwnet(nn.Module):
             x = input
         x = self.start_conv(x)
         # audio = self.beat_conv(audio)
-        # print(x.shape)#torch.Size([192, 32(residual_channels), 9, 16])
-        # print('audio',audio.shape)#audio torch.Size([192, 32, 9])
 
         # cat = torch.cat([x, audio],dim=2)
-        # print(cat.shape)
 
         skip = 0
         # skip_beat = 0
@@ -181,25 +178,21 @@ class gwnet(nn.Module):
             residual = x
             # residual_beat = audio
 
-            # print('residual',residual.shape)
             # dilated convolution
             filter = self.filter_convs[i](residual)
             # filter_beat = self.filter_convs[i](residual_beat)
 
-            # print('filter',filter.shape)#torch.Size([192, 32, 9, 经历8次循环由16减到4])
             filter = torch.tanh(filter)
             # filter_beat = torch.tanh(filter_beat)
 
             gate = self.gate_convs[i](residual)
             # gate_beat = self.gate_convs[i](residual_beat)
 
-            # print('gate', gate.shape)
             gate = torch.sigmoid(gate)
             # gate_beat = torch.sigmoid(gate_beat)
 
             x = filter * gate
             # audio = filter_beat * gate_beat
-            # print('x',x.shape)
 
             # parametrized skip connection
 
@@ -209,7 +202,6 @@ class gwnet(nn.Module):
             s = self.skip_convs[i](s)
             # s_beat = self.skip_convs[i](s_beat)
 
-            # print('s',s.shape)
             try:
                 skip = skip[:, :, :,  -s.size(3):]
                 # skip_beat = skip_beat[:, :, :,  -s_beat.size(3):]
@@ -227,7 +219,6 @@ class gwnet(nn.Module):
                 else:
                     x = self.gconv[i](x,self.supports)
             else:
-                # print(1)
                 x = self.residual_convs[i](x)
 
             x = x + residual[:, :, :, -x.size(3):]
