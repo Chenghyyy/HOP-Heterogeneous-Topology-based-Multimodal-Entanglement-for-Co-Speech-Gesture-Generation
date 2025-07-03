@@ -134,8 +134,6 @@ class TextEncoderTCN(nn.Module):
         else:
             self.embedding = nn.Embedding(n_words, embed_size)
 
-        # print('hidden_size',args.hidden_size)
-        # print('n_layers',args.n_layers)
         num_channels = [args.hidden_size] * args.n_layers#[4]*300
         self.tcn = TemporalConvNet(embed_size, num_channels, kernel_size, dropout=dropout)
 
@@ -153,7 +151,6 @@ class TextEncoderTCN(nn.Module):
         y = self.tcn(emb.transpose(1, 2)).transpose(1, 2)
         y = self.decoder(y)
         return y.contiguous(), 0
-
 
 
 class ContextEncoder(nn.Module):
@@ -226,10 +223,7 @@ class PoseEncoderConv(nn.Module):
 
     def forward(self, poses, variational_encoding):
         # encode
-        #print(poses.shape)
-        #print(type(poses))
         poses = poses.transpose(1, 2)  # to (bs, dim, seq)
-        # print(poses.dtype)
         out = self.net(poses)
         out = out.flatten(1)
         out = self.out_net(out)
@@ -390,13 +384,7 @@ class EmbeddingSpaceEvaluator:
 
         # init embed net
         ckpt = torch.load(embed_net_path, map_location=device)
-        # print(ckpt.keys())
-        # print(ckpt['pose_dim'])
-        # print(ckpt['motion_ae'])
         n_frames = args.n_poses
-        # print('n_frame',n_frames)
-        # print('args.wordembed_dim',args.wordembed_dim)#300
-        # word_embeddings = lang_model.word_embedding_weights
         mode = 'pose'
         self.pose_dim = ckpt['pose_dim']
         # print(self.pose_dim)
@@ -443,8 +431,6 @@ class EmbeddingSpaceEvaluator:
             _, _, _, generated_feat, _, _, generated_recon = self.net(None, None, pre_poses, generated_poses,
                                                                       'pose', variational_encoding=False)
 
-            # print('real_feat',real_feat.shape)#[32, 32]
-            # print('generated_feat',generated_feat.shape)#[32, 32]
             if context_feat:
                 self.context_feat_list.append(context_feat.data.cpu().numpy())
         elif self.pose_dim == 126:
@@ -452,8 +438,6 @@ class EmbeddingSpaceEvaluator:
             real_recon, real_feat = self.net(real_poses)
             generated_recon, generated_feat = self.net(generated_poses)
 
-        # print('real_feat',real_feat)
-        # print('generated_feat',generated_feat)
         self.real_feat_list.append(real_feat.data.cpu().numpy())
         self.generated_feat_list.append(generated_feat.data.cpu().numpy())
 
