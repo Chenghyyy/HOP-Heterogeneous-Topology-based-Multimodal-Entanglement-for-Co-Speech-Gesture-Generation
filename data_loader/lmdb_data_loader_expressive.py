@@ -130,9 +130,7 @@ class SpeechMotionDataset(Dataset):
             frame_duration = (end_time - aux_info['start_time']) / n_frames
 
             extended_word_indices = np.zeros(n_frames)  # zero is the index of padding token
-            text_token_padded = np.zeros(n_frames)  # 因为tokenizer会产生一个起始和结束字符，所以加个2
-            # 但是加2了会打乱原来的时间步长，音频的时间步长与文本的时间步长应该一样，也就是34
-            # 在tokenizer后加入参数, add_special_tokens=False可防止分词时加入起始索引
+            text_token_padded = np.zeros(n_frames)  
 
             if self.remove_word_timing:
                 # print(123456)
@@ -153,16 +151,6 @@ class SpeechMotionDataset(Dataset):
                     if idx < n_frames:
                         n_words += 1
 
-                # 查看0对应的标记
-                # token_0 = self.tokenizer.convert_ids_to_tokens(0)
-                # print(f"Token for ID 0: {token_0}")
-                # # 查看特殊标记的索引
-                # print(f"Padding token ID: {self.tokenizer.pad_token_id}")
-                # print(f"Padding token: {self.tokenizer.pad_token}")
-                # Token for ID 0: [PAD]
-                # Padding token ID: 0
-                # Padding token: [PAD]
-
                 space = int(n_frames / (n_words + 1))
                 # print(n_words)
                 for i in range(n_words):
@@ -170,11 +158,8 @@ class SpeechMotionDataset(Dataset):
                     # print(f"idx: {idx}, i: {i}")
                     extended_word_indices[idx] = lang.get_word_index(words[i][0])
                     text_token_padded[idx] = text_token[0, i]
-                # print('extended_word_indices', extended_word_indices.shape)
-                # print('text_padded',text_token_padded.shape)
 
             else:
-                # print('xyz')
                 prev_idx = 0
                 i = 0
                 for word in words:
@@ -218,12 +203,9 @@ class SpeechMotionDataset(Dataset):
             sample_end_time = None
 
         ##############
-        # print(len(audio_padded))#44800/audio_padded_len=36267
         melspec = librosa.feature.melspectrogram(y=audio, sr=16000, n_fft=1024, hop_length=1096, power=2)
         log_melspec = librosa.power_to_db(melspec, ref=np.max)  # mels x time
         log_melspec = log_melspec.T
-        # print('log_melspec',log_melspec.shape)#hop_length=512~(n_mels, 88)/hop_length=160~(34, 281)/256～(34, 176)/128～(34, 351)#(192,34,128)
-        # print(type(log_melspec))#<class 'numpy.ndarray'>
         ##############
 
         # to tensors
