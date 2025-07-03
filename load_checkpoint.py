@@ -24,17 +24,6 @@ def load_checkpoint_and_model(checkpoint_path, _device='cpu'):
     lang_model = checkpoint['lang_model']
     speaker_model = checkpoint['speaker_model']
     pose_dim = checkpoint['pose_dim']
-    #print(type(checkpoint['gen_dict']))
-    #print(checkpoint['gen_dict'])
-    # print('epoch {}'.format(epoch))
-
-    # 要删除的键列表
-    # keys_to_delete = ['speaker_embedding.0.weight','speaker_embedding.1.weight','speaker_embedding.1.bias','speaker_mu.weight','speaker_mu.bias','speaker_logvar.weight','speaker_logvar.bias']
-    #
-    # # 使用循环删除指定的键
-    # for key in keys_to_delete:
-    #     if key in checkpoint['gen_dict']:
-    #         del checkpoint['gen_dict'][key]
 
     generator, discriminator = init_model(args, lang_model, speaker_model, pose_dim, _device)
     generator.load_state_dict(checkpoint['gen_dict'])
