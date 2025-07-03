@@ -263,7 +263,6 @@ for ii in range(args.itr):
         pose_dim = args.pose_dim
         n_frames = 34
 
-        # model = TimeLLM_mae_copy.Model(args, llm_model, tokenizer, lang_model, speaker_model).float()
         if args.model == 'AD_LLM':
             model = HOP.Model(args, llm_model, tokenizer, speaker_model).float()
             # model.to(torch.bfloat16)
