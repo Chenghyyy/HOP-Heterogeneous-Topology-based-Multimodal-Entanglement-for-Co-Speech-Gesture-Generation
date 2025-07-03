@@ -66,11 +66,6 @@ class MotionPreprocessor:
 
     def check_spine_angle(self, verbose=False):
         def angle_between(v1, v2):
-            # # print(np.linalg.norm(v1))
-            # if v1 == 0 or np.linalg.norm(v1) == 0:
-            #     print(v1)
-            #     print(np.linalg.norm(v1))
-            #     raise ValueError("invalid value encountered in true_divide.")
             v1_u = v1 / np.linalg.norm(v1)
             v2_u = v2 / np.linalg.norm(v2)
             return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
