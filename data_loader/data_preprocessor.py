@@ -168,7 +168,7 @@ class DataPreprocessor:
                     # save
                     k = '{:010}'.format(self.n_out_samples).encode('ascii')
                     v = [words, poses, normalized_dir_vec, audio, spectrogram, aux]
-                    dtype_object = np.dtype('float32')  # 例子中创建了一个 float32 类型的 dtype 对象
+                    dtype_object = np.dtype('float32')  
                     v = pyarrow.serialize(v).to_buffer()
                     txn.put(k, v)
                     self.n_out_samples += 1
