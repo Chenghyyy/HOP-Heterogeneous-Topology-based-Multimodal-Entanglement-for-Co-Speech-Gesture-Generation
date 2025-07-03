@@ -51,7 +51,6 @@ parser = argparse.ArgumentParser(description='Time-LLM')
 
 # vid_idx = random.sample(range(0, 1000), 1)[0]
 
-#为了确保程序中的随机性操作在每次运行时产生相同的结果，即“固定随机种子”。这样做可以使结果可复现，特别是在调试和实验过程中
 # fix_seed = 2021
 # random.seed(fix_seed)
 # torch.manual_seed(fix_seed)
@@ -163,15 +162,11 @@ change_angle = [0.0027804733254015446, 0.002761547453701496, 0.00595356617122888
     0.004873405676335096, 0.002998138777911663, 0.0030240598134696484, 0.0009890805231407285, 0.0012279648799449205,
     0.047324635088443756, 0.04472292214632034]
 
-#得到随机种子必须的向量
 mean_dir_vec = [-0.0737964, -0.9968923, -0.1082858,  0.9111595,  0.2399522, -0.102547 , -0.8936886,  0.3131501, -0.1039348,  0.2093927, 0.958293 ,  0.0824881, -0.1689021, -0.0353824, -0.7588258, -0.2794763, -0.2495191, -0.614666 , -0.3877234,  0.005006 , -0.5301695, -0.5098616,  0.2257808,  0.0053111, -0.2393621, -0.1022204, -0.6583039, -0.4992898,  0.1228059, -0.3292085, -0.4753748,  0.2132857,  0.1742853, -0.2062069,  0.2305175, -0.5897119, -0.5452555,  0.1303197, -0.2181693, -0.5221036, 0.1211322,  0.1337591, -0.2164441,  0.0743345, -0.6464546, -0.5284583,  0.0457585, -0.319634 , -0.5074904,  0.1537192, 0.1365934, -0.4354402, -0.3836682, -0.3850554, -0.4927187, -0.2417618, -0.3054556, -0.3556116, -0.281753 , -0.5164358, -0.3064435,  0.9284261, -0.067134 ,  0.2764367,  0.006997 , -0.7365526,  0.2421269, -0.225798 , -0.6387642,  0.3788997, 0.0283412, -0.5451686,  0.5753376,  0.1935219,  0.0632555, 0.2122412, -0.0624179, -0.6755542,  0.5212831,  0.1043523, -0.345288 ,  0.5443628,  0.128029 ,  0.2073687,  0.2197118, 0.2821399, -0.580695 ,  0.573988 ,  0.0786667, -0.2133071, 0.5532452, -0.0006157,  0.1598754,  0.2093099,  0.124119, -0.6504359,  0.5465003,  0.0114155, -0.3203954,  0.5512083, 0.0489287,  0.1676814,  0.4190787, -0.4018607, -0.3912126, 0.4841548, -0.2668508, -0.3557675,  0.3416916, -0.2419564, -0.5509825,  0.0485515, -0.6343101, -0.6817347, -0.4705639, -0.6380668,  0.4641643,  0.4540192, -0.6486361,  0.4604001, -0.3256226,  0.1883097,  0.8057457,  0.3257385,  0.1292366, 0.815372]
 mean_pose = [-0.0046788, -0.5397806,  0.007695 , -0.0171913, -0.7060388,-0.0107034,  0.1550734, -0.6823077, -0.0303645, -0.1514748,   -0.6819547, -0.0268262,  0.2094328, -0.469447 , -0.0096073,   -0.2318253, -0.4680838, -0.0444074,  0.1667382, -0.4643363,   -0.1895118, -0.1648597, -0.4552845, -0.2159728,  0.1387546,   -0.4859474, -0.2506667,  0.1263615, -0.4856088, -0.2675801,   0.1149031, -0.4804542, -0.267329 ,  0.1414847, -0.4727709,   -0.2583424,  0.1262482, -0.4686185, -0.2682536,  0.1150217,   -0.4633611, -0.2640182,  0.1475897, -0.4415648, -0.2438853,   0.1367996, -0.4383164, -0.248248 ,  0.1267222, -0.435534 ,   -0.2455436,  0.1455485, -0.4557491, -0.2521977,  0.1305471,   -0.4535603, -0.2611591,  0.1184687, -0.4495366, -0.257798 ,   0.1451682, -0.4802511, -0.2081622,  0.1301337, -0.4865308,   -0.2175783,  0.1208341, -0.4932623, -0.2311025, -0.1409241,-0.4742868, -0.2795303, -0.1287992, -0.4724431, -0.2963172,-0.1159225, -0.4676439, -0.2948754, -0.1427748, -0.4589126,-0.2861245, -0.126862 , -0.4547355, -0.2962466, -0.1140265,-0.451308 , -0.2913815, -0.1447202, -0.4260471, -0.2697673,-0.1333492, -0.4239912, -0.2738043, -0.1226859, -0.4238346,-0.2706725, -0.1446909, -0.440342 , -0.2789209, -0.1291436,-0.4391063, -0.2876539, -0.1160435, -0.4376317, -0.2836147,-0.1441438, -0.4729031, -0.2355619, -0.1293268, -0.4793807,-0.2468831, -0.1204146, -0.4847246, -0.2613876, -0.0056085,-0.9224338, -0.1677302, -0.0352157, -0.963936 , -0.1388849,0.0236298, -0.9650772, -0.1385154, -0.0697098, -0.9514691,-0.055632 ,  0.0568838, -0.9565502, -0.0567985]
 data_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
 
-#导入别人训练好的计算FGD的模型
-# checkpoint_path = '/home/wxp/chy/Gesture-Generation-from-Trimodal-Context-master/output/train_multimodal_context/multimodal_context_checkpoint_best.bin'
-# eval_net_path = '/home/wxp/chy/text_evaluator/output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
-eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
+eval_net_path = './output/train_h36m_gesture_autoencoder/ted_expressive_autoencoder_checkpoint_best.bin'
 # args_eval, generator, _, __, out_dim = load_checkpoint_and_model(checkpoint_path, device)
 
 eval_dict = {'frechet': 1}
@@ -180,14 +175,14 @@ best_values = {'frechet': 1e+10}
 
 if args.llm_model == 'LLAMA':
     # self.llama_config = LlamaConfig.from_pretrained('/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/')
-    llama_config = LlamaConfig.from_pretrained("/home/wxp/chy/HOP/llama_model/")
+    llama_config = LlamaConfig.from_pretrained("./llama_model/")
     llama_config.num_hidden_layers = args.llm_layers
     llama_config.output_attentions = True
     llama_config.output_hidden_states = True
     try:
         llm_model = LlamaModel.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=llama_config,
@@ -206,7 +201,7 @@ if args.llm_model == 'LLAMA':
     try:
         tokenizer = LlamaTokenizer.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True
@@ -220,13 +215,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
+    bert_config = BertConfig.from_pretrained("./bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -242,7 +237,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
@@ -260,10 +255,10 @@ llm_model = llm_model.to(device)
 ####################
 
 tb_path = 'model' + '_' + str(datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
-tb_writer = SummaryWriter(log_dir=str(Path('/home/wxp/chy/HOP/view') / 'tensorboard_runs' / tb_path))
+tb_writer = SummaryWriter(log_dir=str(Path('./view') / 'tensorboard_runs' / tb_path))
 
 for ii in range(args.itr):
-        train_dataset = SpeechMotionDataset('/home/HOP/data/ted_expressive_dataset/train',
+        train_dataset = SpeechMotionDataset('./data/ted_expressive_dataset/train',
                                             n_poses=34,
                                             subdivision_stride=10,
                                             pose_resampling_fps=15,
@@ -280,7 +275,7 @@ for ii in range(args.itr):
                                   collate_fn=default_collate_fn
                                   )
 
-        val_dataset = SpeechMotionDataset('/home/HOP/data/ted_expressive_dataset/val',
+        val_dataset = SpeechMotionDataset('./data/ted_expressive_dataset/val',
                                           n_poses=34,
                                           subdivision_stride=10,
                                           pose_resampling_fps=15,
@@ -296,7 +291,7 @@ for ii in range(args.itr):
                                  collate_fn=default_collate_fn
                                  )
 
-        test_dataset = SpeechMotionDataset('/home/wxp/data/ted_expressive_dataset/test',
+        test_dataset = SpeechMotionDataset('./data/ted_expressive_dataset/test',
                                            n_poses=34,
                                            subdivision_stride=10,
                                            pose_resampling_fps=15,
@@ -305,8 +300,8 @@ for ii in range(args.itr):
                                            mean_pose=mean_pose,
                                            tokenizer=tokenizer)
 
-        vocab_cache_path = '/home/HOP/data/ted_expressive_dataset/vocab_cache.pkl'
-        wordembed_path = '/home/HOP/data/fasttext/crawl-300d-2M-subword/crawl-300d-2M-subword.bin'
+        vocab_cache_path = './data/ted_expressive_dataset/vocab_cache.pkl'
+        wordembed_path = './data/fasttext/crawl-300d-2M-subword/crawl-300d-2M-subword.bin'
         lang_model = build_vocab('words', [train_dataset, val_dataset, test_dataset], vocab_cache_path, wordembed_path, 300)
         train_dataset.set_lang_model(lang_model)
         val_dataset.set_lang_model(lang_model)
@@ -316,7 +311,7 @@ for ii in range(args.itr):
 
         if args.model == 'AD_LLM':
             model = HOP.Model(args, llm_model, tokenizer, speaker_model).float()
-            model.to(torch.float32)  # 加gru后
+            model.to(torch.float32)  
             discriminator = ConvDiscriminator(pose_dim).to(device)
         if args.model == 'hierarchy':
             generator = Hierarchical_PoseGenerator(args,
@@ -377,19 +372,15 @@ for ii in range(args.itr):
                 if p.requires_grad is True:
                     trained_parameters.append(p)
             total_params = sum(p.numel() for p in trained_parameters)
-            print(f'Total parameters: {total_params}')#41035635
+            print(f'Total parameters: {total_params}')
 
-            # 相当于原代码中的生成器的优化器
             model_optim = optim.Adam(trained_parameters, lr=args.learning_rate, betas=(0.5, 0.999))
         else:
             gen_optimizer = optim.Adam(generator.parameters(), lr=args.learning_rate, betas=(0.5, 0.999))
 
-        ##########
-        # 判别器的优化器
         dis_optimizer = torch.optim.Adam(discriminator.parameters(),
                                          lr=args.learning_rate * 0.1,
                                          betas=(0.5, 0.999))
-        #########
 
         if args.lradj == 'COS':
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(model_optim, T_max=20, eta_min=1e-8)
@@ -448,7 +439,6 @@ for ii in range(args.itr):
                                       model, discriminator,
                                       model_optim, dis_optimizer, accelerator)
                 if args.generator == 'multimodal_context':
-                    # 这里面generator就相当于我们做的神经网络
                     loss = train_iter_gan(args, epoch, in_text_padded, in_audio, target_dir_vec, vid_indices,
                                           generator, discriminator,
                                           gen_optimizer, dis_optimizer)
@@ -503,8 +493,8 @@ for ii in range(args.itr):
                 best_values['frechet'] = eval_dict['frechet']
 
                 gen_state_dict = model.state_dict()
-                filename = '/home/wxp/chy/HOP/save_checkpoint/expressive_FGD_{:.2f}.bin'.format(eval_dict['frechet'])
-                # filename = '/home/wxp/chy/HOP/save_checkpoint/the_best.bin'
+                filename = './save_checkpoint/expressive_FGD_{:.2f}.bin'.format(eval_dict['frechet'])
+                # filename = './save_checkpoint/the_best.bin'
                 torch.save({'args': args, 'generator': gen_state_dict, 'lang_model': lang_model, 'speaker_model': speaker_model,'pose_dim': pose_dim}, filename)
                 # torch.save({'generator': gen_state_dict}, filename)
                 print('Saved the checkpoint')
