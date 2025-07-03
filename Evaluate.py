@@ -124,7 +124,6 @@ def evaluate_testset(test_data_loader, model, embed_space_evaluator, epoch, spea
                         0.0012279648799449205,
                         0.047324635088443756, 0.04472292214632034]
 
-        # 得到随机种子必须的向量
         mean_dir_vec = [-0.0737964, -0.9968923, -0.1082858, 0.9111595, 0.2399522, -0.102547, -0.8936886, 0.3131501,
                         -0.1039348, 0.2093927, 0.958293, 0.0824881, -0.1689021, -0.0353824, -0.7588258, -0.2794763,
                         -0.2495191, -0.614666, -0.3877234, 0.005006, -0.5301695, -0.5098616, 0.2257808, 0.0053111,
@@ -256,7 +255,6 @@ def evaluate_testset(test_data_loader, model, embed_space_evaluator, epoch, spea
 
             loss = F.l1_loss(outputs, target_dir_vec)
 
-            # 评估
             embed_space_evaluator.push_samples(text_token_padded, in_audio, outputs, target_dir_vec)
             # calculate MAE of joint coordinates
             out_dir_vec = outputs.cpu().numpy()
