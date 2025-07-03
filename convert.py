@@ -57,7 +57,6 @@ def convert_pose_seq_to_dir_vec(pose):
 
     return dir_vec
 
-# 得到随机种子必须的函数
 
 def resample_pose_seq(poses, duration_in_sec, fps):
     n = len(poses)
@@ -150,7 +149,7 @@ def create_video_and_save(save_path, epoch, prefix, iter_idx, target, output, me
 
             if pose is not None:
                 axes[k].clear()
-                # axes[k].axis('off')  # 隐藏坐标轴
+                # axes[k].axis('off')  
                 for j, pair in enumerate(dir_vec_pairs):
                     axes[k].plot([pose[pair[0], 0], pose[pair[1], 0]],
                                  [pose[pair[0], 2], pose[pair[1], 2]],
@@ -160,11 +159,10 @@ def create_video_and_save(save_path, epoch, prefix, iter_idx, target, output, me
                 axes[k].set_ylim3d(0.5, -0.5)
                 axes[k].set_zlim3d(0.5, -0.5)
 
-                # axes[k].set_xticks([])  # 设置 x 轴的刻度：从 -0.5 到 0.5，步长为 0.1
+                # axes[k].set_xticks([])  
                 # axes[k].set_yticks([])
                 # axes[k].set_zticks([])
 
-                # # 设置不显示刻度标签
                 # axes[k].set_xticklabels([])
                 # axes[k].set_yticklabels([])
                 # axes[k].set_zticklabels([])
