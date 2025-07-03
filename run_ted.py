@@ -49,13 +49,11 @@ os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:64"
 
 parser = argparse.ArgumentParser(description='Time-LLM')
 
-#为了确保程序中的随机性操作在每次运行时产生相同的结果，即“固定随机种子”。这样做可以使结果可复现，特别是在调试和实验过程中
 # fix_seed = 2021
 # random.seed(fix_seed)
 # torch.manual_seed(fix_seed)
 # np.random.seed(fix_seed)
 
-#为判别器输入增加噪声
 def add_noise(data):
     noise = torch.randn_like(data) * 0.1
     return data + noise
@@ -111,7 +109,6 @@ ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
 deepspeed_plugin = DeepSpeedPlugin(hf_ds_config='./ds_config_zero2.json')
 accelerator = Accelerator(kwargs_handlers=[ddp_kwargs], deepspeed_plugin=deepspeed_plugin)
 
-#得到随机种子必须的向量
 mean_dir_vec = [ 0.0154009, -0.9690125, -0.0884354, -0.0022264, -0.8655276, 0.4342174, -0.0035145, -0.8755367, -0.4121039, -0.9236511, 0.3061306, -0.0012415, -0.5155854,  0.8129665,  0.0871897, 0.2348464,  0.1846561,  0.8091402,  0.9271948,  0.2960011, -0.013189 ,  0.5233978,  0.8092403,  0.0725451, -0.2037076, 0.1924306,  0.8196916]
 # mean_dir_vec = np.array(mean_dir_vec).squeeze()
 
@@ -121,9 +118,7 @@ data_mean_dir_vec = np.array(mean_dir_vec).reshape(-1, 3)
 joint_pairs = [(0, 1), (1, 2), (2, 3), (1, 4), (4, 5),
                  (5, 6), (1, 7), (7, 8), (8, 9)]  # adjacency and bone length
 
-#导入别人训练好的计算FGD的模型
-# checkpoint_path = '/home/wxp/chy/Gesture-Generation-from-Trimodal-Context-master/output/train_multimodal_context/multimodal_context_checkpoint_best.bin'
-eval_net_path = '/home/wxp/chy/HOP/output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
+eval_net_path = './output/train_h36m_gesture_autoencoder/gesture_autoencoder_checkpoint_best.bin'
 # args_eval, generator, _, __, out_dim = load_checkpoint_and_model(checkpoint_path, device)
 
 eval_dict = {'frechet': 1}
@@ -132,7 +127,7 @@ best_values = {'frechet': 1e+10}
 
 if args.llm_model == 'LLAMA':
     # self.llama_config = LlamaConfig.from_pretrained('/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/')
-    llama_config = LlamaConfig.from_pretrained("/home/wxp/chy/HOP/llama_model/")
+    llama_config = LlamaConfig.from_pretrained("./llama_model/")
     # self.llama_config = LlamaConfig.from_pretrained("/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/")
     llama_config.num_hidden_layers = args.llm_layers
     llama_config.output_attentions = True
@@ -140,7 +135,7 @@ if args.llm_model == 'LLAMA':
     try:
         llm_model = LlamaModel.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True,
@@ -160,7 +155,7 @@ if args.llm_model == 'LLAMA':
     try:
         tokenizer = LlamaTokenizer.from_pretrained(
             # "/mnt/alps/modelhub/pretrained_model/LLaMA/7B_hf/tokenizer.model",
-            "/home/wxp/chy/HOP/llama_model/",
+            "./llama_model/",
             # "/home/wxp/LLaMA-Factory/merge_models/llama_lora_sft/",
             trust_remote_code=True,
             local_files_only=True
@@ -174,13 +169,13 @@ if args.llm_model == 'LLAMA':
             local_files_only=False
         )
 elif args.llm_model == 'BERT':
-    bert_config = BertConfig.from_pretrained("/home/wxp/chy/HOP/bert_model/")
+    bert_config = BertConfig.from_pretrained("./bert_model/")
     bert_config.num_hidden_layers = args.llm_layers
     bert_config.output_attentions = True
     bert_config.output_hidden_states = True
     try:
         llm_model = BertModel.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True,
             config=bert_config,
@@ -196,7 +191,7 @@ elif args.llm_model == 'BERT':
 
     try:
         tokenizer = BertTokenizer.from_pretrained(
-            "/home/wxp/chy/HOP/bert_model/",
+            "./bert_model/",
             trust_remote_code=True,
             local_files_only=True
         )
@@ -214,7 +209,7 @@ llm_model = llm_model.to(device)
 ####################
 
 tb_path = 'model' + '_' + str(datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
-tb_writer = SummaryWriter(log_dir=str(Path('/home/wxp/chy/HOP/view') / 'tensorboard_runs' / tb_path))
+tb_writer = SummaryWriter(log_dir=str(Path('./view') / 'tensorboard_runs' / tb_path))
 
 for ii in range(args.itr):
         train_dataset = SpeechMotionDataset('./data/ted_dataset/lmdb_train',
@@ -260,7 +255,7 @@ for ii in range(args.itr):
                                            tokenizer=tokenizer)
 
         vocab_cache_path = './data/ted_dataset/vocab_cache.pkl'
-        wordembed_path = '/home/wxp/chy/HOP/data/fasttext/crawl-300d-2M-subword.bin'
+        wordembed_path = './data/fasttext/crawl-300d-2M-subword.bin'
         lang_model = build_vocab('words', [train_dataset, val_dataset, test_dataset], vocab_cache_path, wordembed_path, 300)
         train_dataset.set_lang_model(lang_model)
         val_dataset.set_lang_model(lang_model)
@@ -272,7 +267,7 @@ for ii in range(args.itr):
         if args.model == 'AD_LLM':
             model = HOP.Model(args, llm_model, tokenizer, speaker_model).float()
             # model.to(torch.bfloat16)
-            model.to(torch.float32)  # 加gru后
+            model.to(torch.float32)  
             discriminator = ConvDiscriminator(pose_dim).to(device)
         if args.model == 'hierarchy':
             generator = Hierarchical_PoseGenerator(args,
@@ -332,19 +327,15 @@ for ii in range(args.itr):
                 if p.requires_grad is True:
                     trained_parameters.append(p)
             total_params = sum(p.numel() for p in trained_parameters)
-            print(f'Total parameters: {total_params}')#41035635
+            print(f'Total parameters: {total_params}')
 
-            # 相当于原代码中的生成器的优化器
             model_optim = optim.Adam(trained_parameters, lr=args.learning_rate, betas=(0.5, 0.999))
         else:
             gen_optimizer = optim.Adam(generator.parameters(), lr=args.learning_rate, betas=(0.5, 0.999))
 
-        ##########
-        # 判别器的优化器
         dis_optimizer = torch.optim.Adam(discriminator.parameters(),
                                          lr=args.learning_rate * 0.1,
                                          betas=(0.5, 0.999))
-        #########
 
         if args.lradj == 'COS':
             scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(model_optim, T_max=20, eta_min=1e-8)
@@ -401,7 +392,6 @@ for ii in range(args.itr):
                                       model, discriminator,
                                       model_optim, dis_optimizer, accelerator)
                 if args.generator == 'multimodal_context':
-                    # 这里面generator就相当于我们做的神经网络
                     loss = train_iter_gan(args, epoch, in_text_padded, in_audio, target_dir_vec, vid_indices,
                                           generator, discriminator,
                                           gen_optimizer, dis_optimizer)
@@ -451,11 +441,11 @@ for ii in range(args.itr):
             tb_writer.add_scalar('BC/val', BC, epoch)
 
             eval_dict['frechet'] = val_frechet_dist
-            if eval_dict['frechet'] < best_values['frechet']:#4 and BC > 0.7:#best_values['frechet']:
+            if eval_dict['frechet'] < best_values['frechet']:
                 # best_values['frechet'] = eval_dict['frechet']
 
                 gen_state_dict = model.state_dict()
-                filename = '/home/wxp/chy/HOP/save_checkpoint/nollm_FGD_{:.3f}BC_{:.3f}.bin'.format(eval_dict['frechet'], BC)
+                filename = './save_checkpoint/FGD_{:.3f}BC_{:.3f}.bin'.format(eval_dict['frechet'], BC)
                 # filename = '/home/wxp/chy/HOP/save_checkpoint/the_best.bin'
                 torch.save({'args': args, 'generator': gen_state_dict, 'lang_model': lang_model, 'speaker_model': speaker_model,'pose_dim': pose_dim}, filename)
                 # torch.save({'generator': gen_state_dict}, filename)
